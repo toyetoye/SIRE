@@ -2996,7 +2996,7 @@ function initApp() {
     (user.name || user.email || 'User') + ' · ' + (user.role || '').toUpperCase();
   const sireEl = document.getElementById('sireOverlay');
   if (sireEl) sireEl.classList.add('open');
-  loadSireVessels();
+  initSireModule();
 }
 
 let _toastTimer;
