@@ -2596,13 +2596,17 @@ hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
             <label>Chapter to Analyse</label>
             <select id="intelChapterSel">
               <option value="">— Select chapter —</option>
-              <option value="C1|Management, Leadership &amp; Safety Culture">C1 — Management, Leadership &amp; Safety Culture</option>
-              <option value="C2|Certification &amp; Documentation">C2 — Certification &amp; Documentation</option>
+              <option value="C2|Certification and Documentation">C2 — Certification &amp; Documentation</option>
               <option value="C3|Crew Management">C3 — Crew Management</option>
               <option value="C4|Navigation">C4 — Navigation</option>
-              <option value="C5|Cargo, Ballast, Bunkering &amp; Mooring">C5 — Cargo, Ballast, Bunkering &amp; Mooring</option>
+              <option value="C5|Safety Management">C5 — Safety Management</option>
               <option value="C6|Pollution Prevention">C6 — Pollution Prevention</option>
-              <option value="C7|Maritime Security &amp; Environmental">C7 — Maritime Security &amp; Environmental</option>
+              <option value="C7|Maritime Security">C7 — Maritime Security</option>
+              <option value="C8|Cargo and Ballast Systems">C8 — Cargo &amp; Ballast Systems</option>
+              <option value="C9|Mooring and Anchoring">C9 — Mooring &amp; Anchoring</option>
+              <option value="C10|Machinery">C10 — Machinery</option>
+              <option value="C11|General Appearance and Condition">C11 — General Appearance &amp; Condition</option>
+              <option value="C12|Ice Operations">C12 — Ice Operations</option>
             </select>
           </div>
           <div style="display:flex;align-items:flex-end;">
@@ -3039,12 +3043,18 @@ function openModal(id)  { const el = document.getElementById(id); if (el) el.cla
 // ═══════════════════════════════════════════════════════
 
 const SIRE_CHAPTERS_META = [
-  { id:'C2', title:'Certification & Documentation', color:'#60a5fa', roles:['Master','Chief Officer','Chief Engineer'] },
-  { id:'C3', title:'Crew Management',               color:'#f59e0b', roles:['Master','Chief Officer','Chief Engineer'] },
-  { id:'C4', title:'Navigation',                    color:'#34d399', roles:['Master','Chief Officer','2nd Officer'] },
-  { id:'C5', title:'Cargo, Ballast, Bunkering & Mooring', color:'#a78bfa', roles:['Master','Chief Officer','2nd Engineer','Chief Engineer'] },
-  { id:'C6', title:'Pollution Prevention',          color:'#fb923c', roles:['Master','Chief Engineer','Chief Officer'] },
-  { id:'C7', title:'Maritime Security',             color:'#f87171', roles:['Master','Chief Officer','Chief Engineer'] },
+  { id:'C1',  title:'Vessel, Operator & Inspection Particulars',          color:'#94a3b8', roles:['Master','DPA'] },
+  { id:'C2',  title:'Certification & Documentation',                      color:'#60a5fa', roles:['Master','CE','DPA'] },
+  { id:'C3',  title:'Crew Management',                                    color:'#f59e0b', roles:['Master','Officers'] },
+  { id:'C4',  title:'Navigation',                                         color:'#34d399', roles:['Master','Officers'] },
+  { id:'C5',  title:'Safety Management',                                  color:'#a78bfa', roles:['Master','CE','Officers','Crew'] },
+  { id:'C6',  title:'Pollution Prevention',                               color:'#fb923c', roles:['Master','CE','Officers'] },
+  { id:'C7',  title:'Maritime Security',                                  color:'#f87171', roles:['Master','SSO','Officers'] },
+  { id:'C8',  title:'Cargo & Ballast Systems',                            color:'#c084fc', roles:['Master','CE','Cargo Officers'] },
+  { id:'C9',  title:'Mooring & Anchoring',                                color:'#4ade80', roles:['Master','Officers','Bosun'] },
+  { id:'C10', title:'Machinery',                                          color:'#fb7185', roles:['CE','Engineers'] },
+  { id:'C11', title:'General Appearance & Condition',                     color:'#38bdf8', roles:['Master','CE','Officers'] },
+  { id:'C12', title:'Ice Operations',                                     color:'#e2e8f0', roles:['Master','Officers'] },
 ];
 
 // Chapter title remap (server may return old titles)
