@@ -2580,18 +2580,29 @@ hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
             <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);margin-top:3px;">AI-powered search of industry SIRE findings for similar vessels — uses live web data</div>
           </div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;max-width:600px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;max-width:760px;">
+          <div class="fg" style="margin:0;">
+            <label>Vessel Type</label>
+            <select id="intelVesselTypeSel" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;color:var(--text);font-size:12px;">
+              <option value="LPG Gas Carrier">LPG Gas Carrier</option>
+              <option value="LNG Carrier">LNG Carrier</option>
+              <option value="Oil Tanker">Oil Tanker</option>
+              <option value="Chemical Tanker">Chemical Tanker</option>
+              <option value="Crude Oil Tanker">Crude Oil Tanker</option>
+              <option value="Product Tanker">Product Tanker</option>
+            </select>
+          </div>
           <div class="fg" style="margin:0;">
             <label>Chapter to Analyse</label>
             <select id="intelChapterSel">
               <option value="">— Select chapter —</option>
+              <option value="C1|Management, Leadership &amp; Safety Culture">C1 — Management, Leadership &amp; Safety Culture</option>
               <option value="C2|Certification &amp; Documentation">C2 — Certification &amp; Documentation</option>
               <option value="C3|Crew Management">C3 — Crew Management</option>
               <option value="C4|Navigation">C4 — Navigation</option>
               <option value="C5|Cargo, Ballast, Bunkering &amp; Mooring">C5 — Cargo, Ballast, Bunkering &amp; Mooring</option>
               <option value="C6|Pollution Prevention">C6 — Pollution Prevention</option>
-              <option value="C7|Maritime Security">C7 — Maritime Security</option>
-              <option value="C7|Environmental">C7 — Environmental</option>
+              <option value="C7|Maritime Security &amp; Environmental">C7 — Maritime Security &amp; Environmental</option>
             </select>
           </div>
           <div style="display:flex;align-items:flex-end;">
@@ -3121,13 +3132,28 @@ function showSireTab(tab, btnEl) {
 
 // ── READINESS DASHBOARD ───────────────────────────────────
 async function loadSireReadiness() {
-  if (!sireVesselId) return;
+  const kpiEl    = document.getElementById("sireKpiGrid");
+  const cardsEl  = document.getElementById("sireChapterCards");
+  if (!sireVesselId) {
+    if (kpiEl)   kpiEl.innerHTML   = "";
+    if (cardsEl) cardsEl.innerHTML = `
+      <div style="text-align:center;padding:60px 20px;color:var(--text-dim);">
+        <div style="font-size:36px;margin-bottom:14px;">🚢</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--text-bright);margin-bottom:8px;">SELECT A VESSEL</div>
+        <div style="font-size:12px;">Choose a vessel from the dropdown above to view SIRE 2.0 readiness by chapter.</div>
+      </div>`;
+    return;
+  }
+  if (cardsEl) cardsEl.innerHTML = `<div style="font-family:var(--mono);font-size:11px;color:var(--amber);padding:20px;">Loading...</div>`;
   try {
     const data = await fetch(`/api/sire/readiness/${sireVesselId}`,{headers:{"x-auth-token":getToken()}}).then(r=>r.json());
     if (data.summary) data.summary = data.summary.map(remapChapter);
     sireReadiness = data;
     renderReadinessDashboard(data);
-  } catch(e) { console.error(e); }
+  } catch(e) {
+    console.error(e);
+    if (cardsEl) cardsEl.innerHTML = `<div style="color:var(--red);font-family:var(--mono);font-size:11px;padding:20px;">Error loading readiness: ${e.message}</div>`;
+  }
 }
 
 function renderReadinessDashboard(data) {
@@ -3605,7 +3631,7 @@ function buildFindingCard(f, isOverdue, cls, source) {
         ${f.cap_status!=='closed'
           ? `<button class="btn-sm btn-sm-ghost" style="color:var(--green);font-size:9px;" onclick="closeFinding('${f.id}');${source==='fleet'?'loadFleetFindings()':'loadSireFindings()'}">✓ CLOSE</button>`
           : '<span style="font-family:var(--mono);font-size:9px;color:var(--green);">✓ CLOSED</span>'}
-        <button class="btn-sm btn-sm-ghost" style="font-size:9px;color:#c084fc;" onclick="reviewCAP('${f.id}','${source}')">
+        <button class="btn-sm btn-sm-ghost" style="font-size:9px;color:#c084fc;" onclick="reviewCAP('${f.id}','${source}',this)">
           ${rev ? '↻ RE-REVIEW' : '🤖 REVIEW CAP'}
         </button>
         <button class="btn-sm btn-sm-ghost" style="font-size:9px;" onclick="editCAP('${f.id}','${source}')">✎ EDIT CAP</button>
@@ -3690,20 +3716,30 @@ function toggleCAPReview(fId) {
   if (body) body.style.display = body.style.display==='none' ? '' : 'none';
 }
 
-async function reviewCAP(fId, source) {
-  const btn = event?.target;
+async function reviewCAP(fId, source, btnEl) {
+  // btnEl passed explicitly from onclick to avoid event.target unreliability
+  const btn = btnEl || event?.currentTarget || event?.target;
   if (btn) { btn.textContent = '⏳ REVIEWING…'; btn.disabled = true; }
 
-  // Gather finding data from DOM
-  const card = document.getElementById('fc_'+fId);
-  const capText = document.getElementById('cap_action_'+fId)?.value
-    || card?.querySelector('[id^="cap_display_"]')?.textContent || '';
-
   try {
-    // Fetch latest finding data
-    const db = await fetch('/api/sire/findings?vessel_id='+sireVesselId, {headers:{'x-auth-token':getToken()}}).then(r=>r.json());
-    const all = await fetch('/api/sire/fleet-findings', {headers:{'x-auth-token':getToken()}}).then(r=>r.json()).catch(()=>({findings:[]}));
-    const f = (db.length?db:all.findings||[]).find(x=>x.id===fId) || {};
+    // Fetch finding from whichever source has it
+    let f = null;
+    // Try vessel findings first (if vessel selected)
+    if (sireVesselId) {
+      const db = await fetch('/api/sire/findings?vessel_id='+sireVesselId, {headers:{'x-auth-token':getToken()}})
+        .then(r=>r.json()).catch(()=>[]);
+      f = (Array.isArray(db)?db:[]).find(x=>x.id===fId);
+    }
+    // Fall back to fleet findings
+    if (!f) {
+      const all = await fetch('/api/sire/fleet-findings', {headers:{'x-auth-token':getToken()}})
+        .then(r=>r.json()).catch(()=>({findings:[]}));
+      f = (all.findings||[]).find(x=>x.id===fId);
+    }
+    if (!f) throw new Error('Finding not found — try reloading the page');
+
+    // Also grab any unsaved edits from the edit form
+    const capText = document.getElementById('cap_action_'+fId)?.value?.trim() || f.corrective_action || '';
 
     const res = await fetch('/api/sire/review-cap', {
       method: 'POST',
@@ -3714,21 +3750,23 @@ async function reviewCAP(fId, source) {
         chapter: f.chapter || '',
         severity: f.severity || 'obs',
         root_cause: f.root_cause || '',
-        corrective_action: f.corrective_action || capText,
-        vessel_type: getSireVesselType()
+        corrective_action: capText,
+        vessel_type: getSireVesselType() || 'LPG Gas Carrier'
       })
     }).then(r=>r.json());
 
     if (res.error) throw new Error(res.error);
 
-    // Inject review block
+    // Inject review block and show it
     const reviewEl = document.getElementById('cap_review_'+fId);
     if (reviewEl) {
       reviewEl.innerHTML = buildCAPReviewBlock(res, fId, false);
-      reviewEl.style.display = '';
-      // Auto-expand
+      reviewEl.style.display = 'block';
+      // Auto-expand the body
       const body = document.getElementById('cap_review_body_'+fId);
       if (body) body.style.display = '';
+      // Scroll into view
+      reviewEl.scrollIntoView({behavior:'smooth', block:'nearest'});
     }
 
     if (btn) { btn.textContent = '↻ RE-REVIEW'; btn.disabled = false; }
@@ -3819,6 +3857,14 @@ function updateSireVesselSubtitle() {
   if (!el) return;
   if (sireVesselContext) {
     el.textContent = `${sireVesselContext.name.toUpperCase()} · ${getSireVesselType().toUpperCase()} · ${sireVesselContext.flag||''} · IMO ${sireVesselContext.imo||'—'} · ALL 7 CHAPTERS`;
+    // Auto-set the industry intel vessel type selector
+    const typeSel = document.getElementById('intelVesselTypeSel');
+    if (typeSel && sireVesselContext.type) {
+      const vt = sireVesselContext.type.toLowerCase();
+      for (const opt of typeSel.options) {
+        if (opt.value.toLowerCase().includes(vt.split(' ')[0])) { typeSel.value = opt.value; break; }
+      }
+    }
   } else {
     el.textContent = 'SELECT A VESSEL ABOVE · ALL 7 CHAPTERS';
   }
@@ -3836,7 +3882,8 @@ async function loadIndustryIntel() {
   const sel = document.getElementById('intelChapterSel');
   if (!sel?.value) return toast('Select a chapter first');
   const [chapterId, chapterTitle] = sel.value.split('|');
-  const vesselType = getSireVesselType();
+  const typeSel = document.getElementById('intelVesselTypeSel');
+  const vesselType = (typeSel && typeSel.value) || getSireVesselType() || 'LPG Gas Carrier';
   const el = document.getElementById('industryIntelContent');
   el.innerHTML = `<div style="font-family:var(--mono);font-size:11px;color:var(--amber);">🌐 Searching industry findings for ${vesselType} — ${chapterTitle}…<br><span style="color:var(--text-dim);">This uses live web search, please allow 10-20 seconds</span></div>`;
 
