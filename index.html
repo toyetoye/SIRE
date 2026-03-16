@@ -2618,58 +2618,58 @@ hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 
       <!-- FLEET FINDINGS -->
       <div class="sire-section" id="ssec-fleet">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <!-- Row 1: Title + Action buttons -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
           <div>
             <div style="font-family:var(--cond);font-size:22px;font-weight:900;color:var(--text-bright);">FLEET FINDINGS</div>
             <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);margin-top:3px;">All SIRE findings across the fleet — upload past inspection reports</div>
           </div>
-          <!-- Filter row -->
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px;">
-            <input id="fleetFilterInspector" placeholder="Inspector / company…" style="padding:5px 10px;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);width:160px;" oninput="renderFleetFindings()">
-            <select id="fleetFilterChapter" onchange="renderFleetFindings()" style="padding:5px 8px;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);">
-              <option value="">All Chapters</option>
-            </select>
-            <select id="fleetFilterSeverity" onchange="renderFleetFindings()" style="padding:5px 8px;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);">
-              <option value="">All Severities</option>
-              <option value="major">Major</option>
-              <option value="minor">Minor</option>
-              <option value="obs">Observation</option>
-            </select>
-            <select id="fleetFilterVessel" onchange="renderFleetFindings()" style="padding:5px 8px;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);">
-              <option value="">All Vessels</option>
-            </select>
-            <select id="fleetFilterStatus" onchange="renderFleetFindings()" style="padding:5px 8px;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);">
-              <option value="">All Status</option>
-              <option value="open">Open</option>
-              <option value="closed">Closed</option>
-            </select>
-            <select id="fleetSortBy" onchange="renderFleetFindings()" style="padding:5px 8px;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);">
-              <option value="date">Sort: Date</option>
-              <option value="chapter">Sort: Chapter</option>
-              <option value="severity">Sort: Severity</option>
-              <option value="vessel">Sort: Vessel</option>
-            </select>
-            <button class="btn-sm btn-sm-ghost" id="fleetClearFiltersBtn" onclick="fleetClearFilters()" style="font-size:9px;display:none;">✕ Clear filters</button>
-          </div>
-          <!-- Action row -->
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            <div id="fleetFilterSummary" style="font-family:var(--mono);font-size:9px;color:var(--amber);flex:1;"></div>
+          <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">
             <button class="btn-sm btn-sm-ghost" style="color:#c084fc;" id="fleetReviewAllBtn" onclick="fleetReviewAll()">🤖 REVIEW ALL CAPs</button>
             <button class="btn-sm btn-sm-ghost" style="color:#60a5fa;" onclick="fleetDownloadReport()">⬇ DOWNLOAD REPORT</button>
             <button class="btn-sm btn-sm-ghost" onclick="fleetEmailReport()">✉ EMAIL REPORT</button>
             <button class="btn-sm btn-sm-primary" onclick="showUploadPanel('single')">📄 UPLOAD REPORT</button>
             <button class="btn-sm btn-sm-ghost" onclick="showUploadPanel('bulk')">📦 BULK UPLOAD</button>
-            <button class="btn-sm btn-sm-ghost" onclick="loadFleetFindings()">↻</button>
+            <button class="btn-sm btn-sm-ghost" title="Refresh" onclick="loadFleetFindings()">↻</button>
           </div>
+        </div>
+        <!-- Row 2: Filters -->
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:6px;">
+          <input id="fleetFilterInspector" placeholder="Inspector / company…" style="padding:4px 8px;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);width:150px;" oninput="renderFleetFindings()">
+          <select id="fleetFilterChapter" onchange="renderFleetFindings()" style="padding:4px 8px;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);">
+            <option value="">All Chapters</option>
+          </select>
+          <select id="fleetFilterSeverity" onchange="renderFleetFindings()" style="padding:4px 8px;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);">
+            <option value="">All Severities</option>
+            <option value="major">Major</option>
+            <option value="minor">Minor</option>
+            <option value="obs">Observation</option>
+          </select>
+          <select id="fleetFilterVessel" onchange="renderFleetFindings()" style="padding:4px 8px;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);">
+            <option value="">All Vessels</option>
+          </select>
+          <select id="fleetFilterStatus" onchange="renderFleetFindings()" style="padding:4px 8px;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);">
+            <option value="">All Status</option>
+            <option value="open">Open</option>
+            <option value="closed">Closed</option>
+          </select>
+          <select id="fleetSortBy" onchange="renderFleetFindings()" style="padding:4px 8px;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);">
+            <option value="date">Sort: Date</option>
+            <option value="chapter">Sort: Chapter</option>
+            <option value="severity">Sort: Severity</option>
+            <option value="vessel">Sort: Vessel</option>
+          </select>
+          <div id="fleetFilterSummary" style="font-family:var(--mono);font-size:9px;color:var(--amber);flex:1;"></div>
+          <button class="btn-sm btn-sm-ghost" id="fleetClearFiltersBtn" onclick="fleetClearFilters()" style="font-size:9px;display:none;">✕ Clear filters</button>
         </div>
         <!-- Upload panel -->
         <div id="uploadPanel" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:20px;">
 
           <!-- Mode tabs -->
-          <div style="display:flex;gap:4px;margin-bottom:18px;border-bottom:1px solid var(--border);padding-bottom:12px;">
+          <div style="display:flex;align-items:center;gap:4px;margin-bottom:18px;border-bottom:1px solid var(--border);padding-bottom:12px;">
             <button class="sire-status-btn sel-ready" id="uploadTabSingle" onclick="switchUploadTab('single')">📄 UPLOAD REPORT</button>
             <button class="sire-status-btn" id="uploadTabBulk" onclick="switchUploadTab('bulk')">📦 BULK UPLOAD</button>
-            <button class="btn-sm btn-sm-ghost" style="margin-left:auto;" onclick="document.getElementById('uploadPanel').style.display='none'">✕ CLOSE</button>
+            <button class="btn-sm btn-sm-ghost" style="margin-left:auto;color:var(--red);border-color:rgba(248,113,113,0.3);" onclick="document.getElementById('uploadPanel').style.display='none'">✕ CANCEL</button>
           </div>
 
           <!-- SINGLE REPORT UPLOAD -->
@@ -3645,6 +3645,7 @@ function buildFindingCard(f, isOverdue, cls, source) {
           ${rev ? '↻ RE-REVIEW' : '🤖 REVIEW CAP'}
         </button>
         <button class="btn-sm btn-sm-ghost" style="font-size:9px;" onclick="editCAP('${f.id}','${source}')">✎ EDIT CAP</button>
+        ${(getCurrentUser()?.role === 'admin') ? `<button class="btn-sm btn-sm-ghost" style="font-size:9px;color:var(--red);border-color:rgba(248,113,113,0.25);margin-top:4px;" onclick="deleteFinding('${f.id}','${source}')">🗑 DELETE</button>` : ''}
       </div>
     </div>
 
@@ -3844,6 +3845,26 @@ async function saveFinding() {
   closeModal("findingModal");
   loadSireFindings();
   toast("Finding logged");
+}
+
+async function deleteFinding(id, source) {
+  if (!confirm('Delete this finding permanently? This cannot be undone.')) return;
+  try {
+    const res = await fetch(`/api/sire/finding/${id}`, {
+      method: 'DELETE',
+      headers: { 'x-auth-token': getToken() }
+    }).then(r => r.json());
+    if (res.error) throw new Error(res.error);
+    toast('Finding deleted');
+    // Remove card from DOM immediately
+    const card = document.getElementById('fc_' + id);
+    if (card) card.remove();
+    // Refresh data
+    if (source === 'fleet') loadFleetFindings();
+    else loadSireFindings();
+  } catch(e) {
+    toast('Delete failed: ' + e.message, 'error');
+  }
 }
 
 async function closeFinding(id) {
