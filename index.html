@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2863,66 +2862,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
   <!-- Left sidebar navigation -->
   <div class="cust-sidebar" id="custSidebar">
     <div style="padding:12px 20px 16px;font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--text-dim);border-bottom:1px solid var(--border);margin-bottom:8px;">CUSTODIAN MODULE</div>
-    <!-- SIRE FINDING MODAL -->
-<div class="modal-backdrop" id="findingModal">
-  <div class="modal">
-    <div class="modal-title">LOG SIRE FINDING</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <div class="fg"><label>Inspection Date</label><input id="fDate" type="date"></div>
-      <div class="fg"><label>Inspector / Company</label><input id="fInspector" placeholder="e.g. Capt. Smith, BP"></div>
-      <div class="fg"><label>Chapter</label>
-        <select id="fChapter">
-          <option value="C2">C2 — Certification & Documentation</option>
-          <option value="C3">C3 — Crew Management</option>
-          <option value="C4">C4 — Navigation</option>
-          <option value="C5">C5 — Cargo, Ballast, Bunkering & Mooring</option>
-          <option value="C6">C6 — Pollution Prevention</option>
-          <option value="C7">C7 — Maritime Security</option>
-          <option value="C7">C7 — Environmental</option>
-        </select>
-      </div>
-      <div class="fg"><label>Severity</label>
-        <select id="fSeverity">
-          <option value="obs">Observation</option>
-          <option value="minor">Minor Finding</option>
-          <option value="major">Major Finding</option>
-        </select>
-      </div>
-    </div>
-    <div class="fg"><label>Finding Description</label>
-      <textarea id="fDesc" style="height:80px;resize:vertical;" placeholder="What was observed by the inspector?"></textarea>
-    </div>
-    <div class="fg"><label>Root Cause</label>
-      <textarea id="fCause" style="height:60px;resize:vertical;" placeholder="Why did this finding occur?"></textarea>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <div class="fg"><label>Corrective Action</label>
-        <input id="fAction" placeholder="What will be done?">
-      </div>
-      <div class="fg"><label>Responsible Officer</label>
-        <input id="fResponsible" placeholder="e.g. Chief Engineer">
-      </div>
-      <div class="fg"><label>Due Date</label><input id="fDue" type="date"></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-sm btn-sm-ghost" onclick="closeModal('findingModal')">Cancel</button>
-      <button class="btn-sm btn-sm-primary" onclick="saveFinding()">SAVE FINDING</button>
-    </div>
-  </div>
-</div>
-
-<!-- HANDOVER NOTES FORM MODAL -->
-<div class="modal-backdrop" id="handoverFormModal">
-  <div class="modal" style="max-width:760px;max-height:88vh;overflow-y:auto;">
-    <div class="modal-title" id="hoFormTitle">HANDOVER NOTES</div>
-    <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);margin-bottom:16px;" id="hoFormSubtitle"></div>
-
-    <!-- Header info -->
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;">
-      <div class="fg"><label>Outgoing Officer</label><input id="hoOutgoing" placeholder="Your name"></div>
-      <div class="fg"><label>Incoming Officer</label><input id="hoIncoming" placeholder="Relieving officer name"></div>
-      <div class="fg"><label>Handover Date</label><input id="hoDate" type="date"></div>
-    </div>
+    
 
     <!-- Equipment status section — auto-populated -->
     <div style="font-family:var(--mono);font-size:9px;color:var(--amber);letter-spacing:2px;margin-bottom:12px;">EQUIPMENT STATUS UNDER YOUR CUSTODY</div>
@@ -3754,69 +3694,6 @@ function hexToRgb(hex) {
 }
 
 // ── CAP Section Parser ──────────────────────────────────────────────────────
-function formatCAPSections(text, theme) {
-  if (!text) return '';
-  const dark = theme === 'dark';
-  const LABELS = [
-    { key: 'ROOT CAUSE',             icon: '🔍', color: dark ? '#f87171' : '#dc2626', bc: '#f87171' },
-    { key: 'IMMEDIATE ACTION',       icon: '⚡', color: dark ? '#f59e0b' : '#d97706', bc: '#f59e0b' },
-    { key: 'CORRECTIVE ACTION',      icon: '🔧', color: dark ? '#60a5fa' : '#2563eb', bc: '#60a5fa' },
-    { key: 'SHORT-TERM',             icon: '📅', color: dark ? '#60a5fa' : '#2563eb', bc: '#60a5fa' },
-    { key: 'LONG-TERM',              icon: '🔁', color: dark ? '#a78bfa' : '#7c3aed', bc: '#a78bfa' },
-    { key: 'PREVENTIVE ACTION',      icon: '🛡',  color: dark ? '#34d399' : '#16a34a', bc: '#34d399' },
-    { key: 'SYSTEMIC ACTION',        icon: '🔄', color: dark ? '#c084fc' : '#9333ea', bc: '#c084fc' },
-    { key: 'FLEET ACTION',           icon: '🚢', color: dark ? '#fb923c' : '#ea580c', bc: '#fb923c' },
-    { key: 'EVIDENCE OF COMPLETION', icon: '📁', color: dark ? '#a78bfa' : '#7c3aed', bc: '#a78bfa' },
-  ];
-  const txtUp = text.toUpperCase();
-  let positions = [];
-  LABELS.forEach(function(lbl) {
-    let s = 0;
-    while (true) {
-      const pos = txtUp.indexOf(lbl.key, s);
-      if (pos === -1) break;
-      const prev = pos > 0 ? txtUp[pos-1] : ' ';
-      if (pos === 0 || ' \n\r\t:.)-'.indexOf(prev) !== -1) positions.push({pos:pos,label:lbl});
-      s = pos + 1;
-    }
-  });
-  positions.sort(function(a,b){return a.pos-b.pos;});
-  if (!positions.length) {
-    const bg=dark?'rgba(61,184,122,0.07)':'#f8fafc';
-    const bd=dark?'rgba(61,184,122,0.25)':'#e2e8f0';
-    const col=dark?'var(--text)':'#1e293b';
-    return '<div style="background:'+bg+';border:1px solid '+bd+';border-radius:5px;padding:12px 14px;font-size:11px;color:'+col+';line-height:1.7;">'+text+'</div>';
-  }
-  let segs = [];
-  if (positions[0].pos > 0) segs.push({label:null,text:text.substring(0,positions[0].pos).trim()});
-  for (let i=0;i<positions.length;i++) {
-    const start = positions[i].pos + positions[i].label.key.length;
-    const end = i+1<positions.length ? positions[i+1].pos : text.length;
-    segs.push({label:positions[i].label,text:text.substring(start,end).replace(/^[\s:\/\-]+/,'').trim()});
-  }
-  let html = '';
-  segs.forEach(function(seg) {
-    if (!seg.label) {
-      if (seg.text) html+='<div style="font-size:11px;color:'+(dark?'var(--text-dim)':'#64748b')+';line-height:1.7;margin-bottom:8px;">'+seg.text+'</div>';
-      return;
-    }
-    const lbl = seg.label;
-    const bg=dark?'rgba('+hexToRgb(lbl.bc)+',0.08)':'rgba('+hexToRgb(lbl.bc)+',0.05)';
-    const tc=dark?'var(--text)':'#1e293b';
-    let bh='';
-    const sm=seg.text.match(/\d+[\).]\s+/);
-    if (sm) {
-      const pts=seg.text.split(/(?=\d+[\).]\s+)/);
-      bh='<ol style="margin:4px 0 0 0;padding-left:20px;font-size:11px;color:'+tc+';line-height:1.75;">';
-      pts.forEach(function(p){const cl=p.replace(/^\d+[\).]\s+/,'').trim();if(cl)bh+='<li style="margin-bottom:5px;">'+cl+'</li>';});
-      bh+='</ol>';
-    } else { bh='<div style="font-size:11px;color:'+tc+';line-height:1.75;">'+seg.text+'</div>'; }
-    html+='<div style="margin-bottom:10px;padding:10px 12px 10px 14px;background:'+bg+';border-left:3px solid '+lbl.bc+';border-radius:0 4px 4px 0;">'
-      +'<div style="font-size:9px;font-weight:700;color:'+lbl.color+';letter-spacing:1.2px;text-transform:uppercase;margin-bottom:6px;">'+lbl.icon+' '+lbl.key+'</div>'
-      +bh+'</div>';
-  });
-  return html;
-}
 function hexToRgb(hex) {
   hex=hex.replace('#','');
   if(hex.length===3)hex=hex.split('').map(function(c){return c+c;}).join('');
@@ -4398,7 +4275,12 @@ function fleetBuildReportHtml(findings, title) {
           </div>
           <div style="font-size:11px;color:#1e293b;margin-bottom:${rev.weaknesses?.length?'6px':'0'}">${rev.verdict||''}</div>
           ${rev.weaknesses?.length?`<div style="font-size:10px;color:#64748b;margin-bottom:6px;"><strong>Weaknesses:</strong> ${rev.weaknesses.join(' · ')}</div>`:''}
-          ${rev.improved_cap?`<div style="margin-top:6px;padding-top:6px;border-top:1px solid ${scoreColor(rev.score_color)}33;font-size:10px;color:#1e293b;margin-bottom:6px;">' + '<div style="margin-top:8px;padding-top:8px;border-top:1px solid '+scoreColor(rev.score_color)+'33;"><div style="font-size:9px;font-weight:700;color:'+scoreColor(rev.score_color)+';letter-spacing:1px;margin-bottom:6px;">✓ SUGGESTED IMPROVED CAP</div>' + formatCAPSections(rev.improved_cap, 'light') + '</div>' : ''}
+          ${rev.improved_cap ? (function(){
+              var capHtml = formatCAPSections(rev.improved_cap, 'light');
+              return '<div style="margin-top:8px;padding-top:8px;border-top:1px solid '+scoreColor(rev.score_color)+'33;">'
+                + '<div style="font-size:9px;font-weight:700;color:'+scoreColor(rev.score_color)+';letter-spacing:1px;margin-bottom:6px;">\u2713 SUGGESTED IMPROVED CAP</div>'
+                + capHtml + '</div>';
+            })() : ''}
           ${rev.inspector_response?`<div style="margin-top:8px;padding-top:8px;border-top:1px solid #bfdbfe;background:#eff6ff;border-radius:4px;padding:10px 12px;">
             <div style="font-size:9px;font-weight:700;color:#1d4ed8;letter-spacing:1px;margin-bottom:6px;">✉ PROPOSED INSPECTOR RESPONSE</div>
             <div style="font-size:11px;color:#1e293b;line-height:1.7;white-space:pre-wrap;">${rev.inspector_response}</div>
